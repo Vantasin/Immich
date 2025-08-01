@@ -80,8 +80,6 @@ tank/
    ```
 
    > **Note:** Be sure to update the `DB_PASSWORD` and if necessary the `UPLOAD_LOCATION` & `DB_DATA_LOCATION`.
-      
-   > **Tip:** You can create a URL `https://immich.example.com` using [Nginx Proxy Manager](https://github.com/Vantasin/Nginx-Proxy-Manager.git) as a reverse proxy for HTTPS certificates via Let's Encrypt.
 
 5. **Start immich**
 
@@ -96,6 +94,8 @@ tank/
 Once deployed, access **Immich** using:
 
 - **Web Interface:** Enter the URL for Immich. Eg. `https://immich.example.com` or `http://localhost:2283`.
+
+   > **Tip:** You can create a URL `https://immich.example.com` using [Nginx Proxy Manager](https://github.com/Vantasin/Nginx-Proxy-Manager.git) as a reverse proxy for HTTPS certificates via Let's Encrypt.
 
 - **Initial Setup:** When you first access the web interface, you will be prompted to create a superuser account.
 
