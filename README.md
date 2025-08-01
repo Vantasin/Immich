@@ -97,7 +97,7 @@ Once deployed, access **Immich** using:
 
    > **Tip:** You can create a URL `https://immich.example.com` using [Nginx Proxy Manager](https://github.com/Vantasin/Nginx-Proxy-Manager.git) as a reverse proxy for HTTPS certificates via Let's Encrypt.
 
-- **Initial Setup:** When you first access the web interface, you will be prompted to create a superuser account.
+- **Initial Setup:** When you first access the web interface, you will be prompted to create an admin account.
 
 - **Optional:** Download the mobile app to easily sync your phone's camera roll.
 
