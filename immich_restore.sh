@@ -30,6 +30,8 @@ done < "$ENV_FILE"
 # Confirm loaded variables
 echo "UPLOAD_LOCATION = ${UPLOAD_LOCATION:-not set}"
 echo "DB_DATA_LOCATION = ${DB_DATA_LOCATION:-not set}"
+echo "DB_USERNAME = ${DB_USERNAME:-not set}"
+echo "DB_DATABASE_NAME = ${DB_DATABASE_NAME:-not set}"
 
 # Logging functions for consistent output formatting
 log_info() {
