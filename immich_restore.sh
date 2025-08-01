@@ -70,18 +70,17 @@ get_friendly_date() {
   local filename
   filename=$(basename "$file")
 
-  # Try to extract ISO-style datetime (e.g. 20250731T020000)
-  if [[ "$filename" =~ ([0-9]{8})T([0-9]{6}) ]]; then
+  # Try to extract ISO-style date first
+  if [[ "$filename" =~ ([0-9]{8})T ]]; then
     local raw_date="${BASH_REMATCH[1]}"
-    local raw_time="${BASH_REMATCH[2]}"
-    date -d "${raw_date} ${raw_time}" +'%d-%m-%Y %H:%M'
+    date -d "$raw_date" +'%d-%m-%Y'
 
-  # Fall back to decoding 13-digit epoch-based filenames (ms precision)
+  # Fall back to decoding epoch-based filename (optional/approximate)
   elif [[ "$filename" =~ ([0-9]{13}) ]]; then
     local epoch_ms="${BASH_REMATCH[1]}"
     local epoch_sec=$((epoch_ms / 1000))
-    date -d "@$epoch_sec" +'%d-%m-%Y %H:%M'
-
+    date -d "@$epoch_sec" +'%d-%m-%Y'
+  
   else
     echo "Unknown"
   fi
