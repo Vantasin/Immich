@@ -73,17 +73,23 @@ setup_directories() {
 # Extract a friendly date from the file's creation time (or modification time if necessary)
 get_friendly_date() {
   local file="$1"
-  # Try to get the creation (birth) time using GNU stat (%w).
-  creation_date=$(stat -c %w "$file")
-  # If creation_date is "-" or empty, fallback to the modification time (%y).
-  if [ "$creation_date" = "-" ] || [ -z "$creation_date" ]; then
-    creation_date=$(stat -c %y "$file")
+  local filename
+  filename=$(basename "$file")
+
+  # Try to extract ISO-style date first
+  if [[ "$filename" =~ ([0-9]{8})T ]]; then
+    local raw_date="${BASH_REMATCH[1]}"
+    date -d "$raw_date" +'%d-%m-%Y'
+
+  # Fall back to decoding epoch-based filename (optional/approximate)
+  elif [[ "$filename" =~ ([0-9]{13}) ]]; then
+    local epoch_ms="${BASH_REMATCH[1]}"
+    local epoch_sec=$((epoch_ms / 1000))
+    date -d "@$epoch_sec" +'%d-%m-%Y'
+  
+  else
+    echo "Unknown"
   fi
-  # Extract just the date portion (first 10 characters: YYYY-MM-DD)
-  local date_part=${creation_date:0:10}
-  # Reformat the date to DD-MM-YYYY using the date command.
-  friendly_date=$(date -d "$date_part" +'%d-%m-%Y')
-  echo "$friendly_date"
 }
 
 # Present the backup selection menu with clear instructions and friendly aliases based on file creation date
