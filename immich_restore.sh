@@ -27,12 +27,6 @@ done < "$ENV_FILE"
 : "${DB_USERNAME:?DB_USERNAME not set in .env}"
 : "${DB_DATABASE_NAME:?DB_DATABASE_NAME not set in .env}"
 
-# Confirm loaded variables
-echo "UPLOAD_LOCATION = ${UPLOAD_LOCATION:-not set}"
-echo "DB_DATA_LOCATION = ${DB_DATA_LOCATION:-not set}"
-echo "DB_USERNAME = ${DB_USERNAME:-not set}"
-echo "DB_DATABASE_NAME = ${DB_DATABASE_NAME:-not set}"
-
 # Logging functions for consistent output formatting
 log_info() {
   echo -e "\e[32m[INFO]\e[0m $1"
@@ -76,17 +70,18 @@ get_friendly_date() {
   local filename
   filename=$(basename "$file")
 
-  # Try to extract ISO-style date first
-  if [[ "$filename" =~ ([0-9]{8})T ]]; then
+  # Try to extract ISO-style datetime (e.g. 20250731T020000)
+  if [[ "$filename" =~ ([0-9]{8})T([0-9]{6}) ]]; then
     local raw_date="${BASH_REMATCH[1]}"
-    date -d "$raw_date" +'%d-%m-%Y'
+    local raw_time="${BASH_REMATCH[2]}"
+    date -d "${raw_date} ${raw_time}" +'%d-%m-%Y %H:%M'
 
-  # Fall back to decoding epoch-based filename (optional/approximate)
+  # Fall back to decoding 13-digit epoch-based filenames (ms precision)
   elif [[ "$filename" =~ ([0-9]{13}) ]]; then
     local epoch_ms="${BASH_REMATCH[1]}"
     local epoch_sec=$((epoch_ms / 1000))
-    date -d "@$epoch_sec" +'%d-%m-%Y'
-  
+    date -d "@$epoch_sec" +'%d-%m-%Y %H:%M'
+
   else
     echo "Unknown"
   fi
