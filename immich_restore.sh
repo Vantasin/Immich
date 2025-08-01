@@ -21,6 +21,12 @@ while IFS='=' read -r key value; do
   export "$key=$value"
 done < "$ENV_FILE"
 
+# Validate required environment variables
+: "${UPLOAD_LOCATION:?UPLOAD_LOCATION not set in .env}"
+: "${DB_DATA_LOCATION:?DB_DATA_LOCATION not set in .env}"
+: "${DB_USERNAME:?DB_USERNAME not set in .env}"
+: "${DB_DATABASE_NAME:?DB_DATABASE_NAME not set in .env}"
+
 # Confirm loaded variables
 echo "UPLOAD_LOCATION = ${UPLOAD_LOCATION:-not set}"
 echo "DB_DATA_LOCATION = ${DB_DATA_LOCATION:-not set}"
@@ -113,12 +119,12 @@ restore_backup() {
   log_info "Stopping Docker containers and removing volumes..."
   docker compose down -v
 
-  log_info "Removing Postgres data directory..."
+  log_info "Removing Postgres data directory: $DB_DATA_LOCATION"
   rm -rf "$DB_DATA_LOCATION"
 
   log_info "Pulling the latest Docker images..."
   docker compose pull
-  
+
   log_info "Creating Docker containers..."
   docker compose create
 
@@ -128,12 +134,12 @@ restore_backup() {
   log_info "Waiting for Postgres to become ready..."
   local max_wait=30
   local wait_time=0
-  until docker exec immich_postgres pg_isready -U postgres >/dev/null 2>&1 || [ $wait_time -ge $max_wait ]; do
+  until docker exec immich_postgres pg_isready -U "$DB_USERNAME" >/dev/null 2>&1 || [ "$wait_time" -ge "$max_wait" ]; do
     sleep 2
     wait_time=$((wait_time + 2))
   done
 
-  if ! docker exec immich_postgres pg_isready -U postgres >/dev/null 2>&1; then
+  if ! docker exec immich_postgres pg_isready -U "$DB_USERNAME" >/dev/null 2>&1; then
     log_error "Postgres did not become ready in time."
     exit 1
   fi
@@ -141,10 +147,11 @@ restore_backup() {
   log_info "Restoring backup from file: $BACKUP_FILE"
   gunzip < "$BACKUP_FILE" \
     | sed "s/SELECT pg_catalog.set_config('search_path', '', false);/SELECT pg_catalog.set_config('search_path', 'public, pg_catalog', true);/g" \
-    | docker exec -i immich_postgres psql --dbname=postgres --username=postgres
+    | docker exec -i immich_postgres psql --dbname="$DB_DATABASE_NAME" --username="$DB_USERNAME"
 
   log_info "Starting remaining Docker services..."
   docker compose up -d
+
   log_info "Immich services have been started successfully."
 }
 
