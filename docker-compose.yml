@@ -34,6 +34,7 @@ services:
     restart: always
     networks:
       - npm_proxy
+      - immich_internal
     healthcheck:
       disable: false
 
@@ -57,6 +58,8 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_DATABASE_NAME: ${DB_DATABASE_NAME}
     restart: always
+    networks:
+      - immich_internal
     healthcheck:
       disable: false
 
@@ -68,6 +71,8 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     restart: always
+    networks:
+      - immich_internal
 
   database:
     container_name: immich_postgres
@@ -101,6 +106,8 @@ services:
       -c shared_buffers=512MB
       -c wal_compression=on
     restart: always
+    networks:
+      - immich_internal
 
 volumes:
   model-cache:
@@ -108,3 +115,5 @@ volumes:
 networks:
   npm_proxy:
     external: true
+  immich_internal:
+    driver: bridge
