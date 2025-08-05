@@ -93,9 +93,20 @@ tank/
 
 Once deployed, access **Immich** using:
 
-- **Web Interface:** Enter the URL for Immich. Eg. `https://immich.example.com` or `http://localhost:2283`.
+- **Web Interface:** Enter the URL for Immich. Eg. `https://immich.example.com`.
 
-   > **Tip:** You can create a URL `https://immich.example.com` using [Nginx Proxy Manager](https://github.com/Vantasin/Nginx-Proxy-Manager.git) as a reverse proxy for HTTPS certificates via Let's Encrypt.
+   > **Tip:** You must create a URL `https://immich.example.com` using [Nginx Proxy Manager](https://github.com/Vantasin/Nginx-Proxy-Manager.git) as a reverse proxy for HTTPS certificates via Let's Encrypt.
+   >
+   > **Proxy Host:**
+   >  - **Domain Name:** `https://immich.example.com`
+   >  - **Scheme:** `http`
+   >  - **Forward Hostname/IP:** `immich_server`
+   >  - **Forward Port:** `2283`
+   >
+   > **SSL:**
+   >  - Check **Enable SSL**
+   >  - From the **Certificate** dropdown select your `*.example.duckdns.org` certificate
+   >  - Enable **Force SSL** to redirect all HTTP → HTTPS
 
 - **Initial Setup:** When you first access the web interface, you will be prompted to create an admin account.
 

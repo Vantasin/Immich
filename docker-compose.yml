@@ -28,12 +28,12 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_USERNAME: ${DB_USERNAME}
       DB_DATABASE_NAME: ${DB_DATABASE_NAME}
-    ports:
-      - '2283:2283'
     depends_on:
       - redis
       - database
     restart: always
+    networks:
+      - npm_proxy
     healthcheck:
       disable: false
 
@@ -57,6 +57,8 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_DATABASE_NAME: ${DB_DATABASE_NAME}
     restart: always
+    networks:
+      - npm_proxy
     healthcheck:
       disable: false
 
@@ -68,6 +70,8 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     restart: always
+    networks:
+      - npm_proxy
 
   database:
     container_name: immich_postgres
@@ -101,6 +105,12 @@ services:
       -c shared_buffers=512MB
       -c wal_compression=on
     restart: always
+    networks:
+      - npm_proxy
 
 volumes:
   model-cache:
+
+networks:
+  npm_proxy:
+    external: true
