@@ -11,8 +11,6 @@ name: immich
 services:
   immich-server:
     cpus: 2.0 # Limit to 2 cpu cores
-    mem_limit: 2g # Limit memory usage
-    mem_reservation: 512m # Reserve memory
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     # extends:
@@ -36,8 +34,6 @@ services:
 
   immich-machine-learning:
     cpus: 1.0 # Limit to 1 cpu core
-    mem_limit: 1.5g # Limit memory usage
-    mem_reservation: 512m # Reserve memory
     container_name: immich_machine_learning
     # For hardware acceleration, add one of -[armnn, cuda, openvino] to the image tag.
     # Example tag: ${IMMICH_VERSION:-release}-cuda
@@ -63,10 +59,6 @@ services:
     restart: always
     networks:
       - immich_internal
-    # Optional but recommended so Redis doesn't balloon:
-    command: ["valkey-server", "--maxmemory", "200mb", "--maxmemory-policy", "allkeys-lru"]
-    mem_limit: 256m # Limit memory usage
-    mem_reservation: 128m # Reserve memory
 
   database:
     container_name: immich_postgres
