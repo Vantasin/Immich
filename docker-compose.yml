@@ -10,7 +10,6 @@ name: immich
 
 services:
   immich-server:
-    cpus: 2.0 # Limit to 2 cpu cores
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     # extends:
@@ -31,9 +30,12 @@ services:
       - immich_internal
     healthcheck:
       disable: false
+    # CPU: ~1.5 cores in total, pinned to cores 0-1
+    cpu_quota: 150000
+    cpu_period: 100000
+    cpuset: "0-1"
 
   immich-machine-learning:
-    cpus: 1.0 # Limit to 1 cpu core
     container_name: immich_machine_learning
     # For hardware acceleration, add one of -[armnn, cuda, openvino] to the image tag.
     # Example tag: ${IMMICH_VERSION:-release}-cuda
@@ -50,6 +52,10 @@ services:
       - immich_internal
     healthcheck:
       disable: false
+    # CPU: 1 core, pinned to core 2
+    cpu_quota: 100000
+    cpu_period: 100000
+    cpuset: "2"
 
   redis:
     container_name: immich_redis
@@ -59,6 +65,8 @@ services:
     restart: always
     networks:
       - immich_internal
+    # CPU: lightweight, share core 3 with database
+    cpuset: "3"
 
   database:
     container_name: immich_postgres
@@ -77,6 +85,8 @@ services:
     restart: always
     networks:
       - immich_internal
+    # CPU: leave uncapped for performance, but pin to its own core to avoid contention
+    cpuset: "3"
 
 volumes:
   model-cache:
