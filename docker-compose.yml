@@ -30,10 +30,8 @@ services:
       - immich_internal
     healthcheck:
       disable: false
-    # CPU: ~1.5 cores in total, pinned to cores 0-1
-    cpu_quota: 150000
-    cpu_period: 100000
-    cpuset: "0-1"
+    # CPU: pinned to core 1
+    cpuset: "1"
 
   immich-machine-learning:
     container_name: immich_machine_learning
